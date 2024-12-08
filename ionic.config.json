@@ -1,0 +1,7 @@
+{
+  "name": "moon-cycle",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
