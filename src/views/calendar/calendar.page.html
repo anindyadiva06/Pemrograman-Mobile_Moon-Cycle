@@ -1,0 +1,30 @@
+<ion-header>
+    <ion-toolbar>
+      <ion-segment value="month" (ionChange)="changeView($event)">
+        <ion-segment-button value="month">Bulan</ion-segment-button>
+        <ion-segment-button value="year">Tahun</ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content [style]="contentStyle">
+    <div class="container">
+      <div *ngIf="view === 'month'" class="month-calendar">
+        <h3>November</h3>
+        <div class="calendar-grid">
+          <div class="day" *ngFor="let day of displayedData" [class.active]="day.active">
+            {{ day.date }}
+          </div>
+        </div>
+      </div>
+      <div *ngIf="view === 'year'" class="year-calendar">
+        <h3>Desember</h3>
+        <div class="calendar-grid">
+          <div class="day" *ngFor="let day of displayedData" [class.active]="day.active">
+            {{ day.date }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+  
