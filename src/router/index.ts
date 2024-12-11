@@ -4,17 +4,22 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: Array<RouteRecordRaw> = [
   {
     path: '',
-    redirect: '/folder/Inbox'
+    redirect: '/landing',  // Mengarahkan ke halaman LandingPage secara default
+  },
+  {
+    path: '/landing', // Rute untuk LandingPage
+    component: () => import('../views/LandingPage.vue'),
   },
   {
     path: '/folder/:id',
-    component: () => import ('../views/FolderPage.vue')
-  }
-]
+    component: () => import('../views/FolderPage.vue'),
+  },
+  // Rute lainnya (misalnya Home, Login, Register, dsb)
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;
