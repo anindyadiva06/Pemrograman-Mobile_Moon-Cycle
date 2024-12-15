@@ -182,4 +182,9 @@ ion-item.selected {
 ion-menu::part(content) {
   border-radius: 0 20px 20px 0;
 }
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
 </style>
