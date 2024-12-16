@@ -12,6 +12,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@angular/fire": "^18.0.1",
     "@capacitor/app": "6.0.2",
     "@capacitor/core": "6.2.0",
     "@capacitor/haptics": "6.0.2",
