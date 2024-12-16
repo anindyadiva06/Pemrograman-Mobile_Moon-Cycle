@@ -14,6 +14,10 @@ const routes: Array<RouteRecordRaw> = [
     path: '/folder/:id',
     component: () => import('../views/FolderPage.vue'),
   },
+  {
+    path: '/akun', // Rute baru untuk halaman AkunPage
+    component: () => import('../views/AkunPage.vue'),
+  },
   // Rute lainnya (misalnya Home, Login, Register, dsb)
 ];
 
