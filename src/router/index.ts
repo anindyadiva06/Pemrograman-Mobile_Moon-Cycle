@@ -18,6 +18,30 @@ const routes: Array<RouteRecordRaw> = [
     path: '/akun', // Rute baru untuk halaman AkunPage
     component: () => import('../views/AkunPage.vue'),
   },
+  {
+    path: "/profile", // Rute untuk profile
+    component: () => import("@/views/ProfilePage.vue"),
+  },
+  {
+    path: "/rekomendasi-nutrisi",
+    component: () => import("@/views/RekomendasiNutrisi.vue"),
+  },
+  {
+    path: '/fase-menstruasi', // Rute untuk Fase Menstruasi
+    component: () => import('@/views/FaseMenstruasi.vue'),
+  },
+  {
+    path: '/fase-folikular', // Rute untuk Fase Folikular
+    component: () => import('@/views/FaseFolikular.vue'),
+  },
+  {
+    path: '/fase-ovulasi', // Rute untuk Fase Ovulasi
+    component: () => import('@/views/FaseOvulasi.vue'),
+  },
+  {
+    path: '/fase-luteal', // Rute untuk Fase Luteal
+    component: () => import('@/views/FaseLuteal.vue'),
+  },
   // Rute lainnya (misalnya Home, Login, Register, dsb)
 ];
 

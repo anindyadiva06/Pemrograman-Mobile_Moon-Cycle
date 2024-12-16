@@ -28,7 +28,7 @@
       </ion-menu>
 
       <!-- Main Content -->
-      <ion-router-outlet id="main-content"></ion-router-outlet>
+      <ion-router-outlet :key="$route.fullPath" id="main-content"></ion-router-outlet>
     </ion-split-pane>
   </ion-app>
 </template>

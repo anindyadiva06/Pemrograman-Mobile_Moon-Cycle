@@ -3,28 +3,28 @@
     <ion-content>
       <!-- Tombol Silang di Kiri Atas -->
       <div class="close-button" @click="closePage">
-        <ion-icon name="close-outline"></ion-icon>
+        <img src="@/assets/images/close.png" alt="Close" />
       </div>
 
       <!-- Card 1: Informasi Pengguna -->
-      <ion-card class="user-info-card">
+      <ion-card class="user-info-card card-spacing1">
         <div class="card-content">
           <!-- Icon User -->
           <div class="icon-container">
-            <img src="@/assets/images/Icon.png" alt="User Icon" class="icon" />
+            <img src="@/assets/images/Profile.png" alt="User Icon" class="icon" />
           </div>
           <!-- Teks Informasi -->
           <div class="text-content">
             <ion-card-title class="aligned-title">Nama Pengguna</ion-card-title>
             <p>{{ user.email }}</p>
             <p>{{ user.umur }} tahun</p>
-            <ion-button color="primary" @click="editInfo">Edit Info</ion-button>
+            <ion-button color="primary" @click="goToProfile">Edit Info</ion-button>
           </div>
         </div>
       </ion-card>
 
       <!-- Card 2: Privasi Data -->
-      <ion-card class="privacy-card">
+      <ion-card class="privacy-card card-spacing2">
         <div class="card-content">
           <!-- Icon Shield -->
           <div class="icon-container">
@@ -49,7 +49,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { User } from "@/models/User";
+import { useRouter } from "vue-router"; // Import router untuk navigasi
 
 export default defineComponent({
   name: "AkunPage",
@@ -62,9 +62,19 @@ export default defineComponent({
       },
     };
   },
+  setup() {
+    const router = useRouter();
+
+    const goToProfile = () => {
+      router.push("/profile"); // Navigasi ke halaman Profile
+    };
+
+    return { goToProfile };
+  },
   methods: {
     editInfo() {
       console.log("Edit Info Tapped");
+      this.goToProfile(); // Panggil metode navigasi
     },
     pelajariLebihLanjut() {
       console.log("Navigasi ke info privasi");
@@ -77,46 +87,46 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/* Tombol Silang di Kiri Atas */
+/* Tombol Silang dengan Icon */
 .close-button {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  z-index: 10;
-  background-color: #fff;
-  border: 2px solid #ddd;
-  border-radius: 50%;
+  position: absolute;
+  top: 20px; /* Beri jarak dari atas */
+  left: 20px; /* Beri jarak dari kiri */
+  cursor: pointer;
   width: 30px;
   height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
+  z-index: 10;
 }
 
-.close-button ion-icon {
-  font-size: 20px;
-  color: #333;
+.close-button img {
+  width: 100%;
+  height: 100%;
 }
 
-/* Card Styling */
+/* Styling Card */
 ion-card {
   border-radius: 15px;
-  margin-top: 1rem;
+}
+
+.card-spacing1 {
+  margin: 5rem 1.5rem 1.5rem 1.5rem;  
+}
+
+.card-spacing2 {
+  margin: 2rem 1.5rem 1.5rem 1.5rem; 
 }
 
 .user-info-card {
-  background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+  background: linear-gradient(to right, #FFE3F1, #ECA8BB);
 }
 
 .privacy-card {
-  background: linear-gradient(to right, #e0eafc, #cfdef3);
+  background: linear-gradient(to right, #d0cbef, #968fbf);
 }
 
 .card-content {
-  display: flex; /* Flexbox */
-  align-items: center; /* Tengah secara vertikal */
+  display: flex;
+  align-items: center;
   padding: 1rem;
 }
 
@@ -155,7 +165,11 @@ p {
 }
 
 ion-button {
-  margin-top: 0.5rem;
-  font-family: "Poppins", sans-serif;
+  --background: #FFE3F1; 
+  --color: #20184A;
+  --border-radius: 8px; 
+  font-family: "Poppins", sans-serif; 
+  font-weight: bold; 
 }
+
 </style>
