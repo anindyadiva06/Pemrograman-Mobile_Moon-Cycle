@@ -40,8 +40,8 @@
 
       <!-- Tombol Batal dan Simpan -->
       <div class="button-container">
-        <ion-button fill="clear" class="batal-button" @click="cancel">Batal</ion-button>
-        <ion-button class="simpan-button" @click="save">Simpan</ion-button>
+        <button fill="clear" class="batal-button" @click="cancel">Batal</button>
+        <button class="simpan-button" @click="save">Simpan</button>
       </div>
     </ion-content>
   </ion-page>
@@ -147,6 +147,9 @@ ion-item {
   font-family: "Poppins", sans-serif;
   font-weight: 600;
   color: #8a4fd3 !important;
+  background-color: #f2e8ff !important;
+  border-radius: 18px;
+  padding: 0.7rem;
 }
 
 .simpan-button {
@@ -154,6 +157,7 @@ ion-item {
   font-weight: 600;
   background-color: #8a4fd3 !important;
   color: #fff !important;
-  border-radius: 8px;
+  border-radius: 18px;
+  padding: 0.7rem;
 }
 </style>

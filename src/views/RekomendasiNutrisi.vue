@@ -24,7 +24,7 @@
         <p :style="{ color: item.fase === 'Fase Folikular' ? '#20184A' : '#fff' }">
           {{ item.deskripsi }}
         </p>
-        <ion-button
+        <button
           fill="solid"
           size="small"
           class="card-button"
@@ -32,7 +32,7 @@
           @click="goToFase(item.route)"
         >
           {{ item.buttonLabel }}
-        </ion-button>
+        </button>
       </div>
     </ion-content>
   </ion-page>
@@ -118,5 +118,6 @@ const goToFase = (route: string) => {
   font-weight: 600;
   border-radius: 18px;
   text-transform: capitalize;
+  padding: 0.8rem;
 }
 </style>

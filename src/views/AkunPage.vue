@@ -18,7 +18,7 @@
             <ion-card-title class="aligned-title">Nama Pengguna</ion-card-title>
             <p>{{ user.email }}</p>
             <p>{{ user.umur }} tahun</p>
-            <ion-button color="primary" @click="goToProfile">Edit Info</ion-button>
+            <button color="primary" @click="goToProfile">Edit Info</button>
           </div>
         </div>
       </ion-card>
@@ -37,9 +37,6 @@
               Privasi Anda adalah prioritas utama kami. Kami tidak akan pernah menjual data Anda
               dan Anda dapat menghapusnya kapan saja.
             </p>
-            <ion-button fill="outline" color="primary" @click="pelajariLebihLanjut">
-              Pelajari Lebih Lanjut
-            </ion-button>
           </div>
         </div>
       </ion-card>
@@ -164,12 +161,16 @@ p {
   margin: 0.3rem 0;
 }
 
-ion-button {
-  --background: #FFE3F1; 
-  --color: #20184A;
-  --border-radius: 8px; 
-  font-family: "Poppins", sans-serif; 
-  font-weight: bold; 
+button {
+  font-weight: 600;
+  border-radius: 18px;
+  text-transform: capitalize;
+  padding: 0.5rem 1rem;
+  background: #FFE3F1;
+  color: #20184A;
+
+  display: inline-block; /* Posisi inline namun block-aware */
+  margin-left: 7.5rem; 
 }
 
 </style>
