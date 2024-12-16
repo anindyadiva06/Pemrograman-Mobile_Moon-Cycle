@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
+import RiwayatMenstruasi from '@/views/RiwayatMenstruasi.vue';
 
 const routes: Array<RouteRecordRaw> = [
-  {
-    path: '',
-    redirect: '/landing',  // Mengarahkan ke halaman LandingPage secara default
-  },
+  { path: '/', redirect: '/riwayat-menstruasi' },
+  { path: '/riwayat-menstruasi', component: RiwayatMenstruasi },
+  { path: '', redirect: '/landing' },  // Mengarahkan ke halaman LandingPage secara default
   {
     path: '/landing', // Rute untuk LandingPage
     component: () => import('../views/LandingPage.vue'),

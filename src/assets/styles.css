@@ -1,0 +1,20 @@
+ion-toolbar {
+    --background: #ffffff;
+    --color: #3b2a75;
+  }
+  
+  ion-button {
+    --background: #5e35b1;
+    --color: #ffffff;
+  }
+  
+  ion-segment-button {
+    --color: #3b2a75;
+    --indicator-color: #5e35b1;
+  }
+  
+  ion-segment-button.activated {
+    --background: #5e35b1;
+    --color: #ffffff;
+  }
+  
