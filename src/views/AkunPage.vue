@@ -162,15 +162,12 @@ p {
 }
 
 button {
-  font-weight: 600;
-  border-radius: 18px;
-  text-transform: capitalize;
-  padding: 0.5rem 1rem;
-  background: #FFE3F1;
+  background: #FFE3F1; 
   color: #20184A;
-
-  display: inline-block; /* Posisi inline namun block-aware */
-  margin-left: 7.5rem; 
+  border-radius: 18px; 
+  padding: 0.5rem 0.7rem;
+  font-family: "Poppins", sans-serif; 
+  font-weight: bold; 
 }
 
 </style>
