@@ -1,16 +1,18 @@
-// controllers/LoginController.ts
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { alertController } from "@ionic/vue";
-import firebaseApp from "@/services/firebase"; // Firebase konfigurasi
+import firebaseApp from "@/services/firebase";
 
 export default class LoginController {
   static async login(email: string, password: string, router: any) {
-    const auth = getAuth(firebaseApp); // Inisialisasi Firebase Authentication
+    const auth = getAuth(firebaseApp);
     try {
       // Proses login ke Firebase
       await signInWithEmailAndPassword(auth, email, password);
 
-      // Redirect ke halaman homepage jika berhasil
+      // Simpan email ke localStorage setelah login berhasil
+      localStorage.setItem("username", email);
+
+      // Redirect ke halaman homepage
       console.log("Login berhasil!");
       router.push("/homepage");
     } catch (error: any) {
