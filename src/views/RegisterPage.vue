@@ -1,133 +1,241 @@
 <template>
-    <ion-content :style="contentStyle">
-      <div class="container">
-        <!-- Logo -->
-        <div class="logo">
-          <img src="@/assets/images/logo with name" alt="Moon Cycle Logo" />
-        </div>
-        
-        <!-- Teks "Selamat Datang di Moon Cycle" -->
-        <h2 class="welcome-text">
-          Daftar Akun
-        </h2>
-  
-        <!-- Formulir Registrasi -->
-        <ion-item>
-          <ion-label position="floating" class="label">Nama Lengkap</ion-label>
-          <ion-input v-model="fullName" type="text" class="input-field" required></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating" class="label">Nama Pengguna</ion-label>
-          <ion-input v-model="username" type="text" class="input-field" required></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating" class="label">Email</ion-label>
-          <ion-input v-model="email" type="email" class="input-field" required></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating" class="label">Kata Sandi</ion-label>
-          <ion-input v-model="password" type="password" class="input-field" required></ion-input>
-        </ion-item>
-        <ion-item>
-          <ion-label position="floating" class="label">Konfirmasi Kata Sandi</ion-label>
-          <ion-input v-model="confirmPassword" type="password" class="input-field" required></ion-input>
-        </ion-item>
-  
-        <!-- Button Daftar -->
-        <ion-button expand="block" :style="registerButtonStyle" class="button-register">
-          Daftar
-        </ion-button>
-  
-        <!-- Teks Masuk di bawah tombol -->
-        <p class="login-text">
-          Sudah memiliki akun? <a href="/login">Masuk di sini!</a>
-        </p>
+  <ion-content class="content-background">
+    <div class="container">
+      <!-- Logo -->
+      <div class="logo">
+        <img src="@/assets/images/logo with name.png" alt="Moon Cycle Logo" />
       </div>
-    </ion-content>
-  </template>
-  
-  <script lang="ts">
-  export default {
-    name: 'RegistrasiPage',
-    data() {
-      return {
-        fullName: '',
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        contentStyle: {
-          '--background': 'linear-gradient(100%, #ECA8BB, #FFE3F1)', 
-        },
-        registerButtonStyle: {
-          '--background': 'linear-gradient(21%, #ECA8BB, 100%, #ECA8BB)', 
-          '--color': '#FFFFFF', 
-        },
-      };
-    },
-  };
-  </script>
-  
-  <style scoped>
-  
-  body, ion-content {
-    font-family: var(--font-family-base); 
-  }
-  
-  /* Container untuk elemen di dalamnya */
-  .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    padding: 20px;
-    text-align: center;
-  }
 
-  .logo img {
-    width: 120px;
-    margin-bottom: 30px;
-  }
-  
-  .welcome-text {
-    font-size: 27px;
-    font-weight: bold;
-    color: #20184A;
-    margin-bottom: 20px;
-  }
-  
-  .ion-item {
-    margin-bottom: 20px;
-  }
-  
-  .input-field {
-    color: #FFFFFF;
-    background-color: #ECA8BB; 
-  }
-  
-  .label {
-    color: #FFFFFF;
-  }
-  
-  .button-register {
-    margin-top: 20px;
-  }
-  
-  .login-text {
-    font-size: 17px;
-    font-weight: normal;
-    color: #20184A;
-    margin-top: 20px;
-  }
-  
-  a {
-    color: #20184A;
-    text-decoration: none;
-  }
-  
-  a:hover {
-    text-decoration: underline;
-  }
-  </style>
-  
+      <!-- Formulir Daftar -->
+      <div class="input-container">
+        <img src="@/assets/images/user.png" alt="User" class="input-icon" />
+        <input
+          v-model="registerModel.name"
+          placeholder="Nama Lengkap"
+          type="text"
+          required
+          class="custom-input"
+        />
+      </div>
+
+      <div class="input-container">
+        <img src="@/assets/images/user.png" alt="Username" class="input-icon" />
+        <input
+          v-model="registerModel.username"
+          placeholder="Nama Pengguna"
+          type="text"
+          required
+          class="custom-input"
+        />
+      </div>
+
+      <div class="input-container">
+        <img src="@/assets/images/mail.png" alt="Email" class="input-icon" />
+        <input
+          v-model="registerModel.email"
+          placeholder="Email"
+          type="email"
+          required
+          class="custom-input"
+        />
+      </div>
+
+      <div class="input-container">
+        <img src="@/assets/images/lock.png" alt="Password" class="input-icon" />
+        <input
+          v-model="registerModel.password"
+          placeholder="Kata Sandi"
+          type="password"
+          required
+          class="custom-input"
+        />
+      </div>
+
+      <div class="input-container">
+        <img src="@/assets/images/lock.png" alt="Confirm Password" class="input-icon" />
+        <input
+          v-model="registerModel.confirmpass"
+          placeholder="Konfirmasi Kata Sandi"
+          type="password"
+          required
+          class="custom-input"
+        />
+      </div>
+
+      <!-- Button Daftar -->
+      <button class="button-register" @click="handleRegister">DAFTAR</button>
+
+      <!-- Teks Masuk -->
+      <p class="register-text">
+        Sudah memiliki akun? <a href="/login"><strong>Masuk di sini!</strong></a>
+      </p>
+    </div>
+  </ion-content>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import { RegisterModel } from "../models/RegisterModel";
+import { RegisterController } from "../controllers/RegisterController";
+import { useRouter } from "vue-router";
+import { alertController } from "@ionic/vue";
+
+export default defineComponent({
+  name: "RegisterPage",
+  setup() {
+    const router = useRouter();
+    const registerModel = new RegisterModel();
+    const registerController = new RegisterController(router);
+
+    const showErrorPopup = async (message: string) => {
+      const alert = await alertController.create({
+        header: "Pendaftaran Gagal",
+        message: message,
+        buttons: [{ text: "OK", cssClass: "alert-button" }],
+        cssClass: "custom-alert",
+      });
+      await alert.present();
+    };
+
+    const handleRegister = async () => {
+      const validation = registerModel.validate();
+      if (!validation.valid) {
+        await showErrorPopup(validation.message);
+        return;
+      }
+
+      try {
+        await registerController.register(registerModel);
+      } catch (error) {
+        await showErrorPopup("Terjadi kesalahan saat registrasi. Silakan coba lagi.");
+        console.error("Register error:", error);
+      }
+    };
+
+    return {
+      registerModel,
+      handleRegister,
+    };
+  },
+});
+</script>
+
+
+<style>
+/* Background untuk ion-content */
+.content-background {
+  --background: linear-gradient(to bottom, #eca8bbc5 0%,#FFE3F1 69%);
+  font-family: "Poppins", sans-serif;
+}
+
+/* Container utama */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+  text-align: center;
+  gap: 15px;
+}
+
+/* Logo */
+.logo img {
+  margin-top: 20px;
+  width: 300px;
+}
+
+/* Input Container */
+.input-container {
+  width: 100%;
+  max-width: 320px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Custom Input */
+.custom-input {
+  width: 100%;
+  background: #eca8bbb2;
+  border: 0px; 
+  color: #FFFFFF;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 10px 10px 10px 40px; 
+  border-radius: 15px;
+  outline: none;
+  height: 45px;
+  box-sizing: border-box;
+}
+
+/* Placeholder Input */
+.custom-input::placeholder {
+  color: #ffffff80; 
+  opacity: 1;
+}
+
+/* Tombol Login */
+.button-register {
+  width: 70%;
+  max-width: 320px;
+  background: linear-gradient(to right, #eca8bb4b, #eca8bbd2);
+  color: #ffffff;
+  font-weight: bold;
+  border-radius: 25px;
+  height: 40px;
+  font-size: 18px;
+  font-family: "Poppins", sans-serif;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s;
+}
+
+/* Teks Daftar */
+.register-text {
+  font-size: 14px;
+  color: #20184a;
+  margin-top: 10px;
+}
+
+a {
+  color: #20184a;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Gaya Pop-up Alert */
+.custom-alert {
+  --background: #d5cfeefa;
+  --color: #ffffff;
+}
+
+.custom-alert .alert-title,
+.custom-alert .alert-message {
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* Tombol OK */
+.custom-alert .alert-button {
+  color: #ffffff;
+  font-weight: bold;
+  background: transparent;
+}
+
+.custom-alert .alert-button.ion-focused {
+  color: #ffffff;
+  background: transparent;
+}
+</style>
