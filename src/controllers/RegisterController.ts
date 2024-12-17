@@ -1,3 +1,5 @@
+
+import { RegisterModel } from "../models/RegisterModel";
 import { auth, createUserWithEmailAndPassword } from "../services/firebase";
 import { alertController } from "@ionic/vue";
 
@@ -11,24 +13,29 @@ export class RegisterController {
     this.router = router;
   }
 
-  async register(name: string, username: string, email: string, password: string, confirmpass: string) {
-    if (password !== confirmpass) {
-      await this.showErrorPopup("Password dan konfirmasi password tidak cocok!");
+  async register(registerModel: RegisterModel) {
+    const validation = registerModel.validate();
+    if (!validation.valid) {
+      await this.showErrorPopup(validation.message);
       return;
     }
-
+  
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        registerModel.email,
+        registerModel.password
+      );
       const user = userCredential.user;
-
+  
       console.log("Pengguna terdaftar:", user);
-
-      this.router.push("/login"); 
+      this.router.push("/login");
     } catch (error: any) {
       console.error("Error pendaftaran:", error.message);
       await this.showErrorPopup("Terjadi kesalahan: " + error.message);
     }
   }
+  
 
   private async showErrorPopup(message: string) {
     const alert = await alertController.create({
