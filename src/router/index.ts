@@ -7,8 +7,19 @@ const routes: Array<RouteRecordRaw> = [
   { path: '/riwayat-menstruasi', component: RiwayatMenstruasi },
   { path: '', redirect: '/landing' },  // Mengarahkan ke halaman LandingPage secara default
   {
-    path: '/landing', // Rute untuk LandingPage
+    path: '/landing', 
     component: () => import('../views/LandingPage.vue'),
+    meta: { menuDisabled: true }, 
+  },
+  {
+    path: '/login', 
+    component: () => import('../views/LoginPage.vue'),
+    meta: { menuDisabled: true }, 
+  },
+  {
+    path: '/register', 
+    component: () => import('../views/RegisterPage.vue'),
+    meta: { menuDisabled: true },
   },
   {
     path: '/folder/:id',
