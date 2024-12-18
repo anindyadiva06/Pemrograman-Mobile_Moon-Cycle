@@ -14,7 +14,7 @@
             <div class="title-section">
               <h2>{{ MONTHS[currentMonth] }} {{ currentYear }}</h2>
               <div v-if="cycleData?.startDate" class="period-info">
-                <!-- <p>Periode Aktif: {{ formatDisplayDate(cycleData.startDate.toDate()) }}</p> -->
+                <p>Periode Aktif: {{ formatDisplayDate(cycleData.startDate.toDate()) }}</p>
               </div>
             </div>
             <div class="navigation">
@@ -166,37 +166,37 @@ const isDateInRange = (date: Date, startDate: Date, endDate: Date): boolean => {
 
 const isPeriodDay = (date: Date): boolean => {
   if (!cycleData.value?.startDate) return false;
-
+  
   const startDate = cycleData.value.startDate.toDate();
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + (PERIOD_DURATION - 1));
-
+  
   return isDateInRange(date, startDate, endDate);
 };
 
 const isOvulationDay = (date: Date): boolean => {
   if (!cycleData.value?.predictions?.ovulationDate) return false;
-
+  
   const ovulationDate = cycleData.value.predictions.ovulationDate.toDate();
   return isDateInRange(date, ovulationDate, ovulationDate);
 };
 
 const isFertileWindow = (date: Date): boolean => {
   if (!cycleData.value?.predictions?.fertileWindowStart || !cycleData.value?.predictions?.fertileWindowEnd) return false;
-
+  
   const startDate = cycleData.value.predictions.fertileWindowStart.toDate();
   const endDate = cycleData.value.predictions.fertileWindowEnd.toDate();
-
+  
   return isDateInRange(date, startDate, endDate);
 };
 
 const isPredictedPeriod = (date: Date): boolean => {
   if (!cycleData.value?.predictions?.predictedStartDate) return false;
-
+  
   const startDate = cycleData.value.predictions.predictedStartDate.toDate();
   const endDate = new Date(startDate);
   endDate.setDate(endDate.getDate() + (PERIOD_DURATION - 1));
-
+  
   return isDateInRange(date, startDate, endDate);
 };
 
@@ -211,7 +211,7 @@ const getDayClasses = (day: number) => {
 };
 
 const formatDisplayDate = (date: Date): string => {
-  return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+  return ${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()};
 };
 
 const loadPeriodData = async () => {
@@ -242,7 +242,6 @@ onMounted(() => {
   loadPeriodData();
 });
 </script>
-
 
 <style scoped>
 .riwayat-container {
