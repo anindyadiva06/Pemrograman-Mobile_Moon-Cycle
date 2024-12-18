@@ -1,8 +1,7 @@
 export interface User {
-  id?: string; // ID otomatis dari Firebase
+  id?: string;
   email: string;
   nama: string;
-  tanggalLahir: string;
+  username: string;
   kataSandi: string;
-  umur: number;
 }

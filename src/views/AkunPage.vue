@@ -15,9 +15,8 @@
           </div>
           <!-- Teks Informasi -->
           <div class="text-content">
-            <ion-card-title class="aligned-title">Nama Pengguna</ion-card-title>
+            <ion-card-title class="aligned-title">Info Pengguna</ion-card-title>
             <p>{{ user.email }}</p>
-            <p>{{ user.umur }} tahun</p>
             <button color="primary" @click="goToProfile">Edit Info</button>
           </div>
         </div>
@@ -45,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted } from "vue";
 import { useRouter } from "vue-router"; // Import router untuk navigasi
 
 export default defineComponent({
@@ -53,9 +52,7 @@ export default defineComponent({
   data() {
     return {
       user: {
-        email: "emailpengguna@gmail.com",
-        nama: "Nama Pengguna",
-        umur: 19,
+        email: "",
       },
     };
   },
@@ -79,6 +76,15 @@ export default defineComponent({
     closePage() {
       console.log("Tombol silang ditekan");
     },
+  },
+  mounted() {
+    // Ambil email dari localStorage
+    const storedEmail = localStorage.getItem("username");
+    if (storedEmail) {
+      this.user.email = storedEmail;
+    } else {
+      this.user.email = "Email tidak ditemukan"; // Fallback jika tidak ada email
+    }
   },
 });
 </script>

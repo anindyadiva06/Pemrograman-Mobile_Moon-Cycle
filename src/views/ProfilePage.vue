@@ -12,7 +12,7 @@
       </div>
 
       <!-- Judul Halaman -->
-      <h2 class="title">Pilih Foto Profil</h2>
+      <h2 class="title">Edit Info Profil</h2>
 
       <!-- Form Edit Info -->
       <ion-list class="info-list">
@@ -25,8 +25,8 @@
           <ion-input v-model="user.nama" type="text" placeholder="Masukkan Nama"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label position="stacked">Tanggal Lahir</ion-label>
-          <ion-input v-model="user.tanggalLahir" type="date"></ion-input>
+          <ion-label position="stacked">Username</ion-label>
+          <ion-input v-model="user.username" type="text" placeholder="Masukkan Nama"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="stacked">Kata Sandi</ion-label>
@@ -48,38 +48,55 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
+import { fetchUserData } from "@/controllers/AkunController"; // Import fetchUserData
 
 export default defineComponent({
   name: "ProfilePage",
   setup() {
     const router = useRouter();
 
-    // Data user
-    const user = {
+    // Data user yang akan diisi
+    const user = reactive({
       email: "",
       nama: "",
-      tanggalLahir: "",
+      username: "",
       kataSandi: "",
+    });
+
+    // Fetch data user saat halaman dimuat
+    const fetchUser = async () => {
+      const userId = localStorage.getItem("userId");
+      console.log("User ID dari localStorage:", userId); // Debugging
+      if (userId) {
+        const userData = await fetchUserData(userId);
+        console.log("Data pengguna dari Firebase:", userData); // Debugging
+        if (userData) {
+          user.email = userData.email || "";
+          user.nama = userData.nama || "";
+          user.username = userData.username || "";
+          user.kataSandi = userData.kataSandi || "";
+        } else {
+          console.log("Data pengguna kosong atau tidak ditemukan.");
+        }
+      } else {
+        console.log("User ID tidak ditemukan di localStorage.");
+      }
     };
 
-    // Navigasi kembali ke halaman Akun
-    const closePage = () => {
-      router.push("/akun");
-    };
+    onMounted(() => {
+      fetchUser();
+    });
 
-    const cancel = () => {
-      router.push("/akun");
-    };
-
-    // Simpan data (dummy logika)
+    const closePage = () => router.push("/akun");
+    const cancel = () => router.push("/akun");
     const save = () => {
       console.log("Data disimpan:", user);
-      router.push("/akun"); // Kembali ke halaman Akun setelah menyimpan
+      router.push("/akun");
     };
 
-    return { closePage, cancel, save, user };
+    return { user, closePage, cancel, save };
   },
 });
 </script>
