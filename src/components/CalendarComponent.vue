@@ -1,3 +1,4 @@
+
 <template>
   <div class="calendar-container">
     <!-- Header Section -->
@@ -102,7 +103,7 @@ const props = defineProps<{
 const DAYS_OF_WEEK = ['M', 'S', 'S', 'R', 'K', 'J', 'S'];
 const MONTHS = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ];
 
 const viewMode = ref<'month' | 'year'>('month');
@@ -115,21 +116,17 @@ const cycleData = ref<CycleData | null>(null);
 const userId = computed(() => auth.currentUser?.uid);
 
 // Watch untuk initialData
-watch(
-  () => props.initialData,
-  (newData) => {
-    if (newData) {
-      cycleData.value = newData;
-      const date = newData.startDate.toDate();
-      currentMonth.value = date.getMonth();
-      currentYear.value = date.getFullYear();
-      const dateString = formatDate(date.getDate(), date.getMonth());
-      selectedDates.value.clear();
-      selectedDates.value.add(dateString);
-    }
-  },
-  { immediate: true },
-);
+watch(() => props.initialData, (newData) => {
+  if (newData) {
+    cycleData.value = newData;
+    const date = newData.startDate.toDate();
+    currentMonth.value = date.getMonth();
+    currentYear.value = date.getFullYear();
+    const dateString = formatDate(date.getDate(), date.getMonth());
+    selectedDates.value.clear();
+    selectedDates.value.add(dateString);
+  }
+}, { immediate: true });
 
 // Watch untuk perubahan bulan/tahun
 watch([currentMonth, currentYear], async () => {
@@ -153,7 +150,7 @@ const getFirstDayStyle = (day: number, month: number) => {
 const formatDate = (day: number, month: number): string => {
   const monthStr = String(month + 1).padStart(2, '0');
   const dayStr = String(day).padStart(2, '0');
-  return `${currentYear.value}-${monthStr}-${dayStr}`;
+  return ${currentYear.value}-${monthStr}-${dayStr};
 };
 
 const isDateInRange = (date: Date, startDate: Date, endDate: Date): boolean => {
@@ -197,11 +194,11 @@ const getDayClasses = (day: number, monthIndex: number) => {
   const dateString = formatDate(day, monthIndex);
 
   return {
-    selected: selectedDates.value.has(dateString),
+    'selected': selectedDates.value.has(dateString),
     'period-day': isPeriodDay(date),
     'ovulation-day': isOvulationDay(date),
     'fertile-window': isFertileWindow(date),
-    'predicted-period': isPredictedPeriod(date),
+    'predicted-period': isPredictedPeriod(date)
   };
 };
 
@@ -218,12 +215,12 @@ const loadPeriodData = async () => {
     const calendarData = await periodTrackerService.getCalendarData(
       userId.value,
       currentMonth.value,
-      currentYear.value,
+      currentYear.value
     );
 
     if (calendarData.length > 0) {
-      const sortedData = calendarData.sort(
-        (a, b) => b.startDate.toDate().getTime() - a.startDate.toDate().getTime(),
+      const sortedData = calendarData.sort((a, b) => 
+        b.startDate.toDate().getTime() - a.startDate.toDate().getTime()
       );
       cycleData.value = sortedData[0] as CycleData;
     }
@@ -242,7 +239,7 @@ const savePeriodData = async () => {
     const dateString = Array.from(selectedDates.value)[0];
     const [year, month, day] = dateString.split('-').map(Number);
     const startDate = new Date(year, month - 1, day);
-
+    
     await periodTrackerService.savePeriodCycle(userId.value, startDate);
     selectedDates.value.clear();
     await loadPeriodData();
@@ -260,7 +257,7 @@ const changeYear = (increment: number) => {
 const switchToMonthView = async (monthIndex: number) => {
   currentMonth.value = monthIndex;
   viewMode.value = 'month';
-  const monthElement = document.querySelector(`.month-section:nth-child(${monthIndex + 2})`);
+  const monthElement = document.querySelector(.month-section:nth-child(${monthIndex + 2}));
   monthElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
@@ -291,7 +288,6 @@ onMounted(() => {
   }
 });
 </script>
-
 
 <style scoped>
 
