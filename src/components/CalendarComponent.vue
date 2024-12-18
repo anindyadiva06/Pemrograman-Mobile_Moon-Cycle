@@ -51,9 +51,21 @@
           class="year-month" 
           @click="switchToMonthView(index)"
         >
-          <h3 class="bold">{{ month }}</h3>
-          <div class="weekdays">
-            <div v-for="day in DAYS_OF_WEEK" :key="day" class="weekday">{{ day }}</div>
+          <h3>{{ month }}</h3>
+          <div class="mini-calendar">
+            <div class="weekdays">
+              <div v-for="day in DAYS_OF_WEEK" :key="day" class="weekday">{{ day }}</div>
+            </div>
+            <div class="days mini">
+              <div 
+                v-for="day in getDaysInMonth(index)" 
+                :key="day"
+                :style="getFirstDayStyle(day, index)"
+                :class="getDayClasses(day, index)"
+              >
+                {{ day }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -68,14 +80,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { periodTrackerService } from '../services/periodTracker';
 import { auth } from '../services/firebase';
+import { Timestamp } from 'firebase/firestore';
+
+interface CycleData {
+  startDate: Timestamp;
+  predictions?: {
+    ovulationDate: Timestamp;
+    fertileWindowStart: Timestamp;
+    fertileWindowEnd: Timestamp;
+    predictedStartDate: Timestamp;
+  };
+}
+
+const props = defineProps<{
+  initialData?: CycleData;
+}>();
 
 const DAYS_OF_WEEK = ['M', 'S', 'S', 'R', 'K', 'J', 'S'];
 const MONTHS = [
   'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+  'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
 ];
 
 const viewMode = ref<'month' | 'year'>('month');
@@ -83,20 +110,42 @@ const currentDate = ref(new Date());
 const currentYear = ref(currentDate.value.getFullYear());
 const currentMonth = ref(currentDate.value.getMonth());
 const selectedDates = ref(new Set<string>());
-const cycleData = ref<any>(null);
-const predictions = ref<any>(null);
+const cycleData = ref<CycleData | null>(null);
 
 const userId = computed(() => auth.currentUser?.uid);
 
+// Watch untuk initialData
+watch(
+  () => props.initialData,
+  (newData) => {
+    if (newData) {
+      cycleData.value = newData;
+      const date = newData.startDate.toDate();
+      currentMonth.value = date.getMonth();
+      currentYear.value = date.getFullYear();
+      const dateString = formatDate(date.getDate(), date.getMonth());
+      selectedDates.value.clear();
+      selectedDates.value.add(dateString);
+    }
+  },
+  { immediate: true },
+);
+
+// Watch untuk perubahan bulan/tahun
+watch([currentMonth, currentYear], async () => {
+  await loadPeriodData();
+});
+
 const getDaysInMonth = (month: number): number[] => {
-  const date = new Date(currentYear.value, month + 1, 0);
-  return Array.from({ length: date.getDate() }, (_, i) => i + 1);
+  const lastDay = new Date(currentYear.value, month + 1, 0).getDate();
+  return Array.from({ length: lastDay }, (_, i) => i + 1);
 };
 
 const getFirstDayStyle = (day: number, month: number) => {
   if (day === 1) {
     const firstDay = new Date(currentYear.value, month, 1).getDay();
-    return { gridColumnStart: firstDay + 1 };
+    const adjustedFirstDay = firstDay === 0 ? 7 : firstDay;
+    return { gridColumnStart: adjustedFirstDay };
   }
   return {};
 };
@@ -107,35 +156,40 @@ const formatDate = (day: number, month: number): string => {
   return `${currentYear.value}-${monthStr}-${dayStr}`;
 };
 
+const isDateInRange = (date: Date, startDate: Date, endDate: Date): boolean => {
+  const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const normalizedStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+  const normalizedEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+  return normalizedDate >= normalizedStart && normalizedDate <= normalizedEnd;
+};
+
 const isPeriodDay = (date: Date): boolean => {
   if (!cycleData.value?.startDate) return false;
   const startDate = cycleData.value.startDate.toDate();
   const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + 7);
-  return date >= startDate && date <= endDate;
+  endDate.setDate(endDate.getDate() + 6); // 7 hari periode (0-6)
+  return isDateInRange(date, startDate, endDate);
 };
 
 const isOvulationDay = (date: Date): boolean => {
-  if (!cycleData.value?.startDate) return false;
-  const startDate = cycleData.value.startDate.toDate();
-  const ovulationDate = new Date(startDate);
-  ovulationDate.setDate(ovulationDate.getDate() + 13);
-  return date.toDateString() === ovulationDate.toDateString();
+  if (!cycleData.value?.predictions?.ovulationDate) return false;
+  const ovulationDate = cycleData.value.predictions.ovulationDate.toDate();
+  return date.getTime() === ovulationDate.getTime();
 };
 
 const isFertileWindow = (date: Date): boolean => {
-  if (!predictions.value?.fertileWindowStart || !predictions.value?.fertileWindowEnd) return false;
-  const startDate = predictions.value.fertileWindowStart.toDate();
-  const endDate = predictions.value.fertileWindowEnd.toDate();
-  return date >= startDate && date <= endDate;
+  if (!cycleData.value?.predictions?.fertileWindowStart || !cycleData.value?.predictions?.fertileWindowEnd) return false;
+  const startDate = cycleData.value.predictions.fertileWindowStart.toDate();
+  const endDate = cycleData.value.predictions.fertileWindowEnd.toDate();
+  return isDateInRange(date, startDate, endDate);
 };
 
 const isPredictedPeriod = (date: Date): boolean => {
-  if (!predictions.value?.predictedStartDate) return false;
-  const startDate = predictions.value.predictedStartDate.toDate();
+  if (!cycleData.value?.predictions?.predictedStartDate) return false;
+  const startDate = cycleData.value.predictions.predictedStartDate.toDate();
   const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + 7);
-  return date >= startDate && date <= endDate;
+  endDate.setDate(endDate.getDate() + 6);
+  return isDateInRange(date, startDate, endDate);
 };
 
 const getDayClasses = (day: number, monthIndex: number) => {
@@ -143,86 +197,79 @@ const getDayClasses = (day: number, monthIndex: number) => {
   const dateString = formatDate(day, monthIndex);
 
   return {
-    'selected': selectedDates.value.has(dateString),
+    selected: selectedDates.value.has(dateString),
     'period-day': isPeriodDay(date),
     'ovulation-day': isOvulationDay(date),
     'fertile-window': isFertileWindow(date),
-    'predicted-period': isPredictedPeriod(date)
+    'predicted-period': isPredictedPeriod(date),
   };
 };
 
-const toggleSelection = (day: number, monthIndex: number): void => {
+const toggleSelection = (day: number, monthIndex: number) => {
   const dateString = formatDate(day, monthIndex);
-  if (selectedDates.value.has(dateString)) {
-    selectedDates.value.delete(dateString);
-  } else {
-    selectedDates.value.add(dateString);
-  }
+  selectedDates.value.clear(); // Hanya boleh pilih satu tanggal
+  selectedDates.value.add(dateString);
 };
 
-const loadPeriodData = async (): Promise<void> => {
+const loadPeriodData = async () => {
   if (!userId.value) return;
 
   try {
     const calendarData = await periodTrackerService.getCalendarData(
       userId.value,
       currentMonth.value,
-      currentYear.value
+      currentYear.value,
     );
 
     if (calendarData.length > 0) {
-      const latestData = calendarData[0];
-      console.log('Cycle Data:', latestData);
-      console.log('Predictions:', latestData.predictions);
-      cycleData.value = latestData;
-      predictions.value = latestData.predictions;
+      const sortedData = calendarData.sort(
+        (a, b) => b.startDate.toDate().getTime() - a.startDate.toDate().getTime(),
+      );
+      cycleData.value = sortedData[0] as CycleData;
     }
   } catch (error) {
     console.error('Error loading period data:', error);
-    alert('Gagal memuat data periode');
   }
 };
 
-const savePeriodData = async (): Promise<void> => {
+const savePeriodData = async () => {
   if (!userId.value || selectedDates.value.size === 0) {
     alert('Pilih tanggal terlebih dahulu');
     return;
   }
 
   try {
-    const dates = Array.from(selectedDates.value).sort();
-    const [firstDate] = dates;
-    const [year, month, day] = firstDate.split('-').map(Number);
+    const dateString = Array.from(selectedDates.value)[0];
+    const [year, month, day] = dateString.split('-').map(Number);
     const startDate = new Date(year, month - 1, day);
 
     await periodTrackerService.savePeriodCycle(userId.value, startDate);
     selectedDates.value.clear();
     await loadPeriodData();
-    alert('Data berhasil disimpan');
+    emit('close');
   } catch (error) {
     console.error('Error saving period data:', error);
     alert('Gagal menyimpan data');
   }
 };
 
-const changeYear = (increment: number): void => {
+const changeYear = (increment: number) => {
   currentYear.value += increment;
 };
 
-const switchToMonthView = async (monthIndex: number): Promise<void> => {
+const switchToMonthView = async (monthIndex: number) => {
   currentMonth.value = monthIndex;
   viewMode.value = 'month';
-  await nextTick();
-  const monthElement = document.querySelector(`.month-section:nth-child(${monthIndex + 1})`);
+  const monthElement = document.querySelector(`.month-section:nth-child(${monthIndex + 2})`);
   monthElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  await loadPeriodData();
 };
 
-const cancel = (): void => {
+const cancel = () => {
   selectedDates.value.clear();
+  emit('close');
 };
 
-const closeCalendar = (): void => {
+const closeCalendar = () => {
   emit('close');
 };
 
@@ -231,11 +278,35 @@ const emit = defineEmits<{
 }>();
 
 onMounted(() => {
-  loadPeriodData();
+  if (props.initialData) {
+    cycleData.value = props.initialData;
+    const date = props.initialData.startDate.toDate();
+    currentMonth.value = date.getMonth();
+    currentYear.value = date.getFullYear();
+    const dateString = formatDate(date.getDate(), date.getMonth());
+    selectedDates.value.clear();
+    selectedDates.value.add(dateString);
+  } else {
+    loadPeriodData();
+  }
 });
 </script>
 
+
 <style scoped>
+
+.mini-calendar {
+  font-size: 0.8em;
+}
+
+.mini-calendar .days {
+  font-size: 0.7em;
+}
+
+.days.mini div {
+  width: 20px;
+  height: 20px;
+}
 .calendar-container {
   display: flex;
   flex-direction: column;
@@ -493,5 +564,9 @@ onMounted(() => {
     font-size: 14px;
     padding: 4px 8px;
   }
+}
+
+.days div:first-child {
+  grid-column-start: var(--first-day-column, auto);
 }
 </style>
