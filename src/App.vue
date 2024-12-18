@@ -1,90 +1,69 @@
 <template>
   <ion-app>
-    <ion-split-pane content-id="main-content">
-      <!-- Sidebar Menu -->
-      <ion-menu content-id="main-content" type="overlay">
-        <ion-content>
-          <ion-list id="inbox-list">
-            <ion-list-header>Menu</ion-list-header>
-            <ion-note>Hi, User!</ion-note>
+  <ion-split-pane v-if="menuEnabled" content-id="main-content">
+    <!-- Sidebar Menu -->
+    <ion-menu content-id="main-content" type="overlay">
+      <ion-content>
+        <!-- Logo di atas sidebar -->
+        <div class="sidebar-logo">
+          <img src="@/assets/images/logo with name.png" alt="Logo Moon" class="logo-image" />
+        </div>
 
-            <ion-menu-toggle :auto-hide="false" v-for="(p, i) in appPages" :key="i">
-              <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" :detail="false" class="hydrated" :class="{ selected: selectedIndex === i }">
-                <ion-icon aria-hidden="true" slot="start" :ios="p.iosIcon" :md="p.mdIcon"></ion-icon>
-                <ion-label>{{ p.title }}</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
-          </ion-list>
+        <!-- Menu List -->
+        <ion-list id="inbox-list">
+          <ion-note></ion-note>
 
-          <ion-list id="labels-list">
-            <ion-list-header>Labels</ion-list-header>
-
-            <ion-item v-for="(label, index) in labels" lines="none" :key="index">
-              <ion-icon aria-hidden="true" slot="start" ></ion-icon>
-              <ion-label>{{ label }}</ion-label>
+          <!-- Menu Toggle untuk setiap halaman -->
+          <ion-menu-toggle :auto-hide="false" v-for="(p, i) in appPages" :key="i">
+            <ion-item @click="selectedIndex = i" router-direction="root" :router-link="p.url" lines="none" :detail="false" :class="{ selected: selectedIndex === i }">
+              <!-- Ganti ion-icon dengan img -->
+              <img :src="p.icon" alt="Icon" class="menu-icon" />
+              <ion-label>{{ p.title }}</ion-label>
             </ion-item>
-          </ion-list>
-        </ion-content>
-      </ion-menu>
+          </ion-menu-toggle>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
 
-      <!-- Main Content -->
-      <ion-router-outlet :key="$route.fullPath" id="main-content"></ion-router-outlet>
-    </ion-split-pane>
-  </ion-app>
+    <!-- Main Content yang terpengaruh oleh sidebar -->
+    <ion-router-outlet id="main-content"></ion-router-outlet>
+  </ion-split-pane>
+
+  <!-- Main Content tanpa sidebar ketika menuEnabled false -->
+  <ion-router-outlet id="main-content" v-else></ion-router-outlet>
+</ion-app>
 </template>
 
 <script setup lang="ts">
-import {
-  IonApp,
-  IonContent,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonListHeader,
-  IonMenu,
-  IonMenuToggle,
-  IonNote,
-  IonRouterOutlet,
-  IonSplitPane,
-} from '@ionic/vue';
-import { ref } from 'vue';
-import {
-  homeOutline,
-  homeSharp,
-  personCircleOutline,
-  personCircleSharp,
-  logInOutline,
-  logInSharp,
-  addCircleOutline,
-  addCircleSharp,
-  keyOutline,
-  keySharp,
-} from 'ionicons/icons';
+import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
+import { ref, computed } from 'vue'; 
+import { useRouter } from 'vue-router';
+import homePageIcon from '@/assets/images/home-page.png';
+import userIcon from '@/assets/images/user.png';
+import menstrualCupIcon from '@/assets/images/menstrual-cup.png';
+import editIcon from '@/assets/images/edit.png';
+import healthyFoodIcon from '@/assets/images/healthy-food.png';
+import clockIcon from '@/assets/images/clock.png';
+import exitIcon from '@/assets/images/exit.png'; 
 
 const selectedIndex = ref(0);
+
 const appPages = [
-  {
-    title: 'Home',
-    url: '/home',
-    iosIcon: homeOutline,
-    mdIcon: homeSharp,
-  },
-  {
-    title: 'Login',
-    url: '/login',
-    iosIcon: logInOutline,
-    mdIcon: logInSharp,
-  },
-  {
-    title: 'Register',
-    url: '/register',
-    iosIcon: addCircleOutline,
-    mdIcon: addCircleSharp,
-  },
+  { title: 'Beranda', url: '/homepage', icon: homePageIcon },
+  { title: 'Akun', url: '/akun', icon: userIcon },
+  { title: 'Pencatatan', url: '/riwayat-menstruasi', icon: editIcon },
+  { title: 'Kalender', url: '/riwayat-menstruasi', icon: menstrualCupIcon },
+  { title: 'Nutrisi', url: '/rekomendasi-nutrisi', icon: healthyFoodIcon },
+  { title: 'Riwayat', url: '/riwayat', icon: clockIcon },
+  { title: 'Keluar', url: '/landing', icon: exitIcon },
 ];
 
-const labels = ['Family', 'Friends', 'Work', 'Travel', 'Reminders'];
+const router = useRouter();
+
+const menuEnabled = computed(() => {
+  const route = router.currentRoute.value;
+  return !route.meta?.menuDisabled; // Jika route memiliki meta menuDisabled: true, maka sidebar tidak aktif
+});
 
 const path = window.location.pathname.split('folder/')[1];
 if (path !== undefined) {
@@ -98,7 +77,6 @@ ion-menu {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   border-radius: 0 20px 20px 0;
 }
-
 
 ion-menu ion-content {
   --background: transparent;
@@ -140,6 +118,8 @@ ion-menu.md ion-item ion-icon {
 
 ion-menu.md ion-item ion-label {
   font-weight: 500;
+  color: white; /* White text color */
+  font-family: 'Poppins', sans-serif;
 }
 
 ion-menu.ios ion-content {
@@ -183,8 +163,23 @@ ion-menu::part(content) {
   border-radius: 0 20px 20px 0;
 }
 
-body {
-  font-family: 'Poppins', sans-serif;
+.sidebar-logo {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
 }
 
+.logo-image {
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+}
+
+/* Styling untuk ikon menu */
+.menu-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-right: 10px;
+}
 </style>
