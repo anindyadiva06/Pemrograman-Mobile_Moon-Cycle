@@ -54,7 +54,7 @@ const appPages = [
   { title: 'Pencatatan', url: '/riwayat-menstruasi', icon: editIcon },
   { title: 'Kalender', url: '/riwayat-menstruasi', icon: menstrualCupIcon },
   { title: 'Nutrisi', url: '/rekomendasi-nutrisi', icon: healthyFoodIcon },
-  { title: 'Riwayat', url: '/riwayat', icon: clockIcon },
+  { title: 'Riwayat', url: '/riwayat-menstruasi', icon: clockIcon },
   { title: 'Keluar', url: '/landing', icon: exitIcon },
 ];
 
