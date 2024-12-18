@@ -3,6 +3,7 @@ import { RouteRecordRaw } from 'vue-router';
 import RiwayatMenstruasi from '@/views/RiwayatMenstruasi.vue';
 
 const routes: Array<RouteRecordRaw> = [
+  { path: '/', redirect: '/riwayat-menstruasi' },
   {
     path: '/riwayat-menstruasi',
     name: 'RiwayatMenstruasi',

@@ -1,4 +1,3 @@
-
 <template>
   <div class="calendar-container">
     <!-- Header Section -->
@@ -150,7 +149,7 @@ const getFirstDayStyle = (day: number, month: number) => {
 const formatDate = (day: number, month: number): string => {
   const monthStr = String(month + 1).padStart(2, '0');
   const dayStr = String(day).padStart(2, '0');
-  return ${currentYear.value}-${monthStr}-${dayStr};
+  return `${currentYear.value}-${monthStr}-${dayStr}`;
 };
 
 const isDateInRange = (date: Date, startDate: Date, endDate: Date): boolean => {
@@ -257,7 +256,7 @@ const changeYear = (increment: number) => {
 const switchToMonthView = async (monthIndex: number) => {
   currentMonth.value = monthIndex;
   viewMode.value = 'month';
-  const monthElement = document.querySelector(.month-section:nth-child(${monthIndex + 2}));
+  const monthElement = document.querySelector(`.month-section:nth-child(${monthIndex + 2})`);
   monthElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
