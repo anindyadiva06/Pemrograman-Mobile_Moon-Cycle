@@ -15,8 +15,11 @@
           </div>
           <!-- Teks Informasi -->
           <div class="text-content">
-            <ion-card-title class="aligned-title">Info Pengguna</ion-card-title>
-            <p>{{ user.email }}</p>
+            <ion-card-title class="aligned-title">
+              Hai, <span class="highlight">{{ user.name || "Pengguna" }}</span>!
+            </ion-card-title>
+            <p><strong>Email:</strong> {{ user.email || "Email tidak ditemukan" }}</p>
+            <p><strong>Username:</strong> {{ user.username || "Username tidak ditemukan" }}</p>
             <button color="primary" @click="goToProfile">Edit Info</button>
           </div>
         </div>
@@ -53,6 +56,8 @@ export default defineComponent({
     return {
       user: {
         email: "",
+        name: "", // Tambahkan properti name
+        username: "", // Tambahkan properti username
       },
     };
   },
@@ -69,20 +74,26 @@ export default defineComponent({
     closePage() {
       console.log("Tombol silang ditekan");
     },
-    updateEmail() {
-      const storedEmail = localStorage.getItem("username");
+    updateUserData() {
+      const storedEmail = localStorage.getItem("email");
+      const storedName = localStorage.getItem("name");
+      const storedUsername = localStorage.getItem("username");
+
       this.user.email = storedEmail || "Email tidak ditemukan";
-    },
+      this.user.name = storedName || "Pengguna";
+      this.user.username = storedUsername || "Username tidak ditemukan";
+    }
+
   },
   mounted() {
-    this.updateEmail(); // Inisialisasi email dari localStorage
+    this.updateUserData(); // Inisialisasi email, name, dan username dari localStorage
 
     // Tambahkan event listener untuk mendeteksi perubahan pada localStorage
-    window.addEventListener("storage", this.updateEmail);
+    window.addEventListener("storage", this.updateUserData);
   },
   unmounted() {
     // Bersihkan event listener
-    window.removeEventListener("storage", this.updateEmail);
+    window.removeEventListener("storage", this.updateUserData);
   },
 });
 </script>

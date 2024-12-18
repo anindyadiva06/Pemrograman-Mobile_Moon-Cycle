@@ -6,7 +6,6 @@
         <img src="@/assets/images/close.png" alt="Close Icon" />
       </div>
 
-      <!-- Foto Profil -->
       <div class="profile-container">
         <img src="@/assets/images/Profile.png" alt="User Icon" class="profile-icon" />
       </div>
@@ -23,9 +22,9 @@
             @ionInput="(e: CustomEvent) => user.email = e.detail.value"
             type="email"
             placeholder="Masukkan Email"
+            disabled
           ></ion-input>
         </ion-item>
-
         <ion-item>
           <ion-label position="stacked">Nama</ion-label>
           <ion-input
@@ -35,7 +34,6 @@
             placeholder="Masukkan Nama"
           ></ion-input>
         </ion-item>
-
         <ion-item>
           <ion-label position="stacked">Username</ion-label>
           <ion-input
@@ -43,16 +41,6 @@
             @ionInput="(e: CustomEvent) => user.username = e.detail.value"
             type="text"
             placeholder="Masukkan Username"
-          ></ion-input>
-        </ion-item>
-
-        <ion-item>
-          <ion-label position="stacked">Kata Sandi</ion-label>
-          <ion-input
-            :value="user.password"
-            @ionInput="(e: CustomEvent) => user.password = e.detail.value"
-            type="password"
-            placeholder="Masukkan Kata Sandi"
           ></ion-input>
         </ion-item>
       </ion-list>
@@ -79,13 +67,12 @@ export default defineComponent({
 
     // Data user yang akan diisi
     const user = reactive({
-      email: "",
+      email: "", // Untuk menampilkan email saja
       name: "",
       username: "",
-      password: "",
     });
 
-    // Fetch data user dari session login
+    // Fetch data user dari Firestore
     const fetchUser = async () => {
       const userId = localStorage.getItem("userId");
       if (userId) {
@@ -98,9 +85,8 @@ export default defineComponent({
             email: userData.email || "",
             name: userData.name || "",
             username: userData.username || "",
-            password: userData.password || "",
           });
-          console.log("Setelah update user:", user); // Tambahkan log ini
+          console.log("Setelah fetch user:", user); // Log tambahan
         } else {
           console.log("Data pengguna tidak ditemukan.");
         }
@@ -112,23 +98,27 @@ export default defineComponent({
       const userId = localStorage.getItem("userId");
       if (userId) {
         const trimmedUser = {
-          email: user.email.trim(),
           name: user.name.trim(),
           username: user.username.trim(),
-          password: user.password.trim(),
         };
 
-        if (!trimmedUser.email || !trimmedUser.name || !trimmedUser.username || !trimmedUser.password) {
-          await showErrorPopup("Semua kolom harus diisi!");
+        // Validasi input
+        if (!trimmedUser.name || !trimmedUser.username) {
+          await showErrorPopup("Kolom nama dan username harus diisi!");
           return;
         }
 
         try {
+          // Update data di Firestore
           await updateUserData(userId, trimmedUser);
 
-          // Update email di localStorage agar AkunPage mendeteksi perubahan
-          localStorage.setItem("username", trimmedUser.email);
+          // Update localStorage agar AkunPage membaca data terbaru
+          localStorage.setItem("email", user.email.trim());
+          localStorage.setItem("username", user.username.trim());
+          localStorage.setItem("name", user.name.trim());
 
+
+          console.log("Data berhasil diperbarui di Firestore.");
           await showSuccessPopup();
           router.push("/akun");
         } catch (error) {
@@ -148,8 +138,7 @@ export default defineComponent({
       await alert.present();
     };
 
-
-    // Tampilkan popup berhasil
+    // Fungsi popup sukses
     const showSuccessPopup = async () => {
       const alert = await alertController.create({
         header: "Berhasil",
