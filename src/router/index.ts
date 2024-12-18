@@ -50,22 +50,21 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/ProfilePage.vue"),
   },
   {
-    path: '/fase-menstruasi', // Rute untuk Fase Menstruasi
-    component: () => import('../views/FaseMenstruasi.vue'),
+    path: '/fase-menstruasi',
+    component: () => import('../views/FaseMenstruasi.vue')
   },
   {
-    path: '/fase-folikular', // Rute untuk Fase Folikular
-    component: () => import('../views/FaseFolikular.vue'),
+    path: '/fase-folikular',
+    component: () => import('../views/FaseFolikular.vue')
   },
   {
-    path: '/fase-ovulasi', // Rute untuk Fase Ovulasi
-    component: () => import('../views/FaseOvulasi.vue'),
+    path: '/fase-ovulasi',
+    component: () => import('../views/FaseOvulasi.vue')
   },
   {
-    path: '/fase-luteal', // Rute untuk Fase Luteal
-    component: () => import('../views/FaseLuteal.vue'),
-  },
-  // Rute lainnya (misalnya Home, Login, Register, dsb)
+    path: '/fase-luteal',
+    component: () => import('../views/FaseLuteal.vue')
+  }
 ];
 
 const router = createRouter({
