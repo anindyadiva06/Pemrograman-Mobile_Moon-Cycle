@@ -21,7 +21,7 @@
               <h4 class="card-title">Fase Menstruasi</h4>
               <p class="description">Kamu sedang berada di fase menstruasi</p>
               <!-- Tombol Lihat Kalender -->
-              <ion-button fill="solid" class="action-button" @click="goToRiwayatMenstruasi">Lihat Kalender</ion-button>
+              <ion-button fill="solid" class="action-button" @click="goToFaseMenstruasi">Lihat Kalender</ion-button>
             </div>
             <img src="@/assets/images/reproductive.png" alt="Fase" class="card-image" />
           </div>
@@ -76,14 +76,18 @@ export default defineComponent({
     const router = useRouter(); // Inisialisasi router di setup()
 
     const goToRiwayatMenstruasi = () => {
-      router.push('/riwayat-menstruasi'); // Arahkan ke halaman RiwayatMenstruasi
+      router.push('/riwayat-menstruasi');
+    };
+
+    const goToFaseMenstruasi = () => {
+      router.push('/fase-menstruasi');
     };
 
     const goToRekomendasiNutrisi = () => {
       router.push('/rekomendasi-nutrisi'); // Arahkan ke halaman RekomendasiNutrisi
     };
 
-    return { goToRiwayatMenstruasi, goToRekomendasiNutrisi }; // Return untuk digunakan di template
+    return { goToRiwayatMenstruasi, goToRekomendasiNutrisi,goToFaseMenstruasi }; // Return untuk digunakan di template
   },
   methods: {
     async openMenu() {
