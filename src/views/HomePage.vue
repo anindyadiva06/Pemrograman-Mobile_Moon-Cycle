@@ -10,7 +10,7 @@
     <!-- Konten Utama -->
     <div class="container">
       <!-- Greeting -->
-      <h3 class="greeting">Halo, <span>User!</span></h3>
+      <h3 class="greeting">Hi, <span>Dear!</span></h3>
       <p class="subtitle">Mari lihat apa yang sedang kamu butuhkan</p>
 
       <!-- Card Fase Menstruasi -->
@@ -18,9 +18,8 @@
         <ion-card-content>
           <div class="card-content">
             <div class="left-content">
-              <h4 class="card-title">Fase Menstruasi</h4>
-              <p class="description">Kamu sedang berada di fase menstruasi</p>
-              <!-- Tombol Lihat Kalender -->
+              <h4 class="card-title">{{ currentPhase.title }}</h4>
+              <p class="description">Kamu sedang berada pada Fase {{ currentPhase.description }}</p>
               <ion-button fill="solid" class="action-button" @click="goToRiwayatMenstruasi">Lihat Kalender</ion-button>
             </div>
             <img src="@/assets/images/reproductive.png" alt="Fase" class="card-image" />
@@ -37,7 +36,6 @@
               <p class="description">
                 Cek kalender menstruasi dan atur siklusnya untuk memahami pola tubuh Anda.
               </p>
-              <!-- Tombol Cek Kalender -->
               <ion-button fill="solid" class="action-button" @click="goToRiwayatMenstruasi">Cek Kalender</ion-button>
             </div>
             <img src="@/assets/images/menstrual-cup.png" alt="Kalender" class="card-image" />
@@ -54,7 +52,6 @@
               <p class="description">
                 Yuk, temukan rekomendasi nutrisi terbaik untuk setiap fase siklus Anda.
               </p>
-              <!-- Tombol Cek Nutrisi -->
               <ion-button fill="solid" class="action-button" @click="goToRekomendasiNutrisi">Cek Nutrisi</ion-button>
             </div>
             <img src="@/assets/images/healthy-food.png" alt="Nutrisi" class="card-image" />
@@ -66,28 +63,114 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { menuController } from "@ionic/vue";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
+import { periodTrackerService } from "@/services/periodTracker";
 
 export default defineComponent({
   name: "Homepage",
   setup() {
-    const router = useRouter(); // Inisialisasi router di setup()
+    const router = useRouter();
+    const currentPhase = ref({
+      title: "Fase Tidak Diketahui",
+      description: "Belum ada data siklus yang tersedia. Silakan tambahkan data siklus Anda."
+    });
+
+    const validateDate = (date: any): Date | null => {
+      if (!date) return null;
+      return date.toDate ? date.toDate() : new Date(date);
+    };
+
+    const determinePhase = (cycleData: any) => {
+      const now = new Date();
+
+      if (!cycleData || !cycleData.startDate) {
+        return {
+          title: "Fase Tidak Diketahui",
+          description: "Belum ada data siklus yang tersedia. Silakan tambahkan data siklus Anda."
+        };
+      }
+
+      const startDate = validateDate(cycleData.startDate);
+      const ovulationDate = validateDate(cycleData.predictions?.ovulationDate);
+      const fertileStart = validateDate(cycleData.predictions?.fertileWindowStart);
+      const fertileEnd = validateDate(cycleData.predictions?.fertileWindowEnd);
+
+      if (!startDate) {
+        return {
+          title: "Fase Tidak Diketahui",
+          description: "Tanggal mulai siklus tidak valid."
+        };
+      }
+
+      const periodEnd = new Date(startDate);
+      periodEnd.setDate(periodEnd.getDate() + 7);
+
+      if (now >= startDate && now <= periodEnd) {
+        return {
+          title: "Fase Menstruasi",
+          description: "Kamu sedang berada di fase menstruasi. Istirahat yang cukup sangat disarankan."
+        };
+      } else if (ovulationDate && now.toDateString() === ovulationDate.toDateString()) {
+        return {
+          title: "Fase Ovulasi",
+          description: "Kamu sedang berada di fase ovulasi. Ini adalah saat terbaik untuk konsepsi."
+        };
+      } else if (fertileStart && fertileEnd && now >= fertileStart && now <= fertileEnd) {
+        return {
+          title: "Fase Subur",
+          description: "Kamu sedang berada di masa subur. Jaga pola makan sehat untuk mendukung kesehatan."
+        };
+      }
+      return {
+        title: "Fase Luteal",
+        description: "Kamu sedang berada di fase luteal. Tetap tenang dan atur stres dengan baik."
+      };
+    };
+
+    const loadPhaseData = async () => {
+      try {
+        const userId = "USER_ID"; // Ganti dengan ID pengguna yang valid.
+        const cycleData = await periodTrackerService.getCalendarData(userId, new Date().getMonth() + 1, new Date().getFullYear());
+
+        if (cycleData.length === 0) {
+          throw new Error("Data siklus tidak ditemukan.");
+        }
+
+        const latestCycle = cycleData[cycleData.length - 1]; // Ambil siklus terakhir
+
+        currentPhase.value = determinePhase(latestCycle);
+      } catch (error) {
+        console.error("Gagal memuat data fase:", error);
+        currentPhase.value = {
+          title: "Fase Tidak Diketahui",
+          description: "Terjadi kesalahan saat memuat data. Periksa koneksi Anda atau coba lagi nanti."
+        };
+      }
+    };
+
+    onMounted(() => {
+      loadPhaseData();
+    });
 
     const goToRiwayatMenstruasi = () => {
-      router.push('/riwayat-menstruasi'); // Arahkan ke halaman RiwayatMenstruasi
+      router.push("/riwayat-menstruasi");
     };
 
     const goToRekomendasiNutrisi = () => {
-      router.push('/rekomendasi-nutrisi'); // Arahkan ke halaman RekomendasiNutrisi
+      router.push("/rekomendasi-nutrisi");
     };
 
-    return { goToRiwayatMenstruasi, goToRekomendasiNutrisi }; // Return untuk digunakan di template
+    return {
+      goToRiwayatMenstruasi,
+      goToRekomendasiNutrisi,
+      currentPhase
+    };
   },
   methods: {
     async openMenu() {
-      await menuController.open(); // Membuka sidebar
+      await menuController.open();
     }
   }
 });
@@ -196,6 +279,7 @@ export default defineComponent({
   font-size: 12px; 
   color: #fff;
   margin-bottom: 10px;
+  text-align: left;
 }
 
 .action-button {
