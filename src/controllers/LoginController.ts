@@ -8,7 +8,7 @@ export default class LoginController {
     try {
       // Proses login ke Firebase
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      localStorage.setItem("userId", userCredential.user.uid); // Simpan userId
+      localStorage.setItem("userId", userCredential.user.uid);
       localStorage.setItem("username", email);
 
       // Redirect ke halaman homepage
