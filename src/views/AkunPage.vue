@@ -73,6 +73,7 @@ export default defineComponent({
   methods: {
     closePage() {
       console.log("Tombol silang ditekan");
+      this.$router.push("/homepage"); 
     },
     updateUserData() {
       const storedEmail = localStorage.getItem("email");
