@@ -149,7 +149,7 @@ const getFirstDayStyle = (day: number, month: number) => {
 const formatDate = (day: number, month: number): string => {
   const monthStr = String(month + 1).padStart(2, '0');
   const dayStr = String(day).padStart(2, '0');
-  return `${currentYear.value}-${monthStr}-${dayStr}`;
+  return ${currentYear.value}-${monthStr}-${dayStr};
 };
 
 const isDateInRange = (date: Date, startDate: Date, endDate: Date): boolean => {
@@ -191,13 +191,18 @@ const isPredictedPeriod = (date: Date): boolean => {
 const getDayClasses = (day: number, monthIndex: number) => {
   const date = new Date(currentYear.value, monthIndex, day);
   const dateString = formatDate(day, monthIndex);
+  const today = new Date();
+  const isToday = date.getDate() === today.getDate() && 
+                  date.getMonth() === today.getMonth() && 
+                  date.getFullYear() === today.getFullYear();
 
   return {
     'selected': selectedDates.value.has(dateString),
     'period-day': isPeriodDay(date),
     'ovulation-day': isOvulationDay(date),
     'fertile-window': isFertileWindow(date),
-    'predicted-period': isPredictedPeriod(date)
+    'predicted-period': isPredictedPeriod(date),
+    'today': isToday
   };
 };
 
@@ -256,7 +261,7 @@ const changeYear = (increment: number) => {
 const switchToMonthView = async (monthIndex: number) => {
   currentMonth.value = monthIndex;
   viewMode.value = 'month';
-  const monthElement = document.querySelector(`.month-section:nth-child(${monthIndex + 2})`);
+  const monthElement = document.querySelector(.month-section:nth-child(${monthIndex + 2}));
   monthElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
@@ -289,6 +294,54 @@ onMounted(() => {
 </script>
 
 <style scoped>
+
+.days div.today {
+  background-color: #1a73e8;
+  color: white;
+  font-weight: bold;
+  position: relative;
+}
+
+.days div.today::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  border: 2px solid #1a73e8;
+  z-index: 1;
+}
+
+/* Handle today with other states */
+.days div.today.period-day {
+  background-color: #ff99cc;
+  color: #000000;
+}
+
+.days div.today.ovulation-day {
+  background-color: #1a73e8;
+  border: 2px dashed #4a90e2;
+}
+
+.days div.today.fertile-window {
+  background-color: #b3d9ff;
+  color: #000000;
+}
+
+.days div.today.predicted-period {
+  background-color: #1a73e8;
+  border: 2px solid #ff99cc;
+}
+
+/* Mini calendar today indicator */
+.days.mini div.today {
+  font-weight: bold;
+  background-color: #1a73e8;
+  color: white;
+}
+
 
 .mini-calendar {
   font-size: 0.8em;
@@ -433,6 +486,7 @@ onMounted(() => {
 .days div:hover {
   background-color: #f0f0f0;
 }
+
 
 .days div.selected {
   background-color: #e3a1c2;

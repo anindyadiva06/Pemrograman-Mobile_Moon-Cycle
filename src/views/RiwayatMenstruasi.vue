@@ -115,7 +115,51 @@ const daysInMonth = computed(() => {
   return Array.from({ length: date.getDate() }, (_, i) => i + 1);
 });
 
-// Navigation functions
+// Find active period month
+const findActivePeriodMonth = async () => {
+  if (!userId.value) return;
+  
+  try {
+    // Get data for current month first
+    let calendarData = await periodTrackerService.getCalendarData(
+      userId.value,
+      currentMonth.value,
+      currentYear.value
+    );
+
+    // If no active period in current month, check recent months
+    if (!calendarData.length) {
+      for (let i = 1; i <= 2; i++) {  // Check up to 2 months back
+        const prevMonth = (currentMonth.value - i + 12) % 12;
+        const yearOffset = currentMonth.value - i < 0 ? -1 : 0;
+        
+        calendarData = await periodTrackerService.getCalendarData(
+          userId.value,
+          prevMonth,
+          currentYear.value + yearOffset
+        );
+        
+        if (calendarData.length) {
+          const mostRecent = calendarData[0];
+          const periodDate = mostRecent.startDate.toDate();
+          currentMonth.value = periodDate.getMonth();
+          currentYear.value = periodDate.getFullYear();
+          break;
+        }
+      }
+    }
+
+    if (calendarData.length) {
+      const sortedData = calendarData.sort((a, b) => 
+        b.startDate.toDate().getTime() - a.startDate.toDate().getTime()
+      );
+      cycleData.value = sortedData[0];
+    }
+  } catch (error) {
+    console.error('Error finding active period:', error);
+  }
+};
+
 const previousMonth = () => {
   if (currentMonth.value === 0) {
     currentMonth.value = 11;
@@ -134,7 +178,6 @@ const nextMonth = () => {
   }
 };
 
-// Watch for month/year changes
 watch([currentMonth, currentYear], async () => {
   await loadPeriodData();
 });
@@ -202,16 +245,22 @@ const isPredictedPeriod = (date: Date): boolean => {
 
 const getDayClasses = (day: number) => {
   const date = new Date(currentYear.value, currentMonth.value, day);
+  const today = new Date();
+  const isToday = date.getDate() === today.getDate() && 
+                  date.getMonth() === today.getMonth() && 
+                  date.getFullYear() === today.getFullYear();
+
   return {
     'period-day': isPeriodDay(date),
     'ovulation-day': isOvulationDay(date),
     'fertile-window': isFertileWindow(date),
-    'predicted-period': isPredictedPeriod(date)
+    'predicted-period': isPredictedPeriod(date),
+    'today': isToday
   };
 };
 
 const formatDisplayDate = (date: Date): string => {
-  return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
+  return ${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()};
 };
 
 const loadPeriodData = async () => {
@@ -238,12 +287,53 @@ const loadPeriodData = async () => {
   }
 };
 
-onMounted(() => {
-  loadPeriodData();
+onMounted(async () => {
+  await findActivePeriodMonth();
 });
 </script>
 
 <style scoped>
+
+.days div.today {
+  background-color: #1a73e8;
+  color: white;
+  font-weight: bold;
+  position: relative;
+}
+
+.days div.today::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  border: 2px solid #1a73e8;
+  z-index: 1;
+}
+
+/* Handle today with other states */
+.days div.today.period-day {
+  background-color: #ff99cc;
+  color: #000000;
+}
+
+.days div.today.ovulation-day {
+  background-color: #1a73e8;
+  border: 2px dashed #4a90e2;
+}
+
+.days div.today.fertile-window {
+  background-color: #b3d9ff;
+  color: #000000;
+}
+
+.days div.today.predicted-period {
+  background-color: #1a73e8;
+  border: 2px solid #ff99cc;
+}
+
 .riwayat-container {
   padding: 16px;
 }
@@ -365,3 +455,5 @@ onMounted(() => {
   }
 }
 </style>
+
+riwayat menstruasi.vue
