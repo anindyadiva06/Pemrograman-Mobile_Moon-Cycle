@@ -7,14 +7,13 @@ export default class LoginController {
     const auth = getAuth(firebaseApp);
     try {
       // Proses login ke Firebase
-      await signInWithEmailAndPassword(auth, email, password);
-
-      // Simpan email ke localStorage setelah login berhasil
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      localStorage.setItem("userId", userCredential.user.uid); // Simpan userId
       localStorage.setItem("username", email);
-
+      
       // Redirect ke halaman homepage
       console.log("Login berhasil!");
-      router.push("/homepage");
+      router.push("/akun");
     } catch (error: any) {
       let errorMessage = "Email atau password tidak sesuai!";
 

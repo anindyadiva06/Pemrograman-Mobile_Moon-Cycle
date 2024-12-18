@@ -1,7 +1,9 @@
-
 import { RegisterModel } from "../models/RegisterModel";
 import { auth, createUserWithEmailAndPassword } from "../services/firebase";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { alertController } from "@ionic/vue";
+
+const db = getFirestore();
 
 export class RegisterController {
   private router: any;
@@ -19,16 +21,24 @@ export class RegisterController {
       await this.showErrorPopup(validation.message);
       return;
     }
-  
+    
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         registerModel.email,
         registerModel.password
       );
-      const user = userCredential.user;
-  
-      console.log("Pengguna terdaftar:", user);
+
+      // Simpan data user ke Firestore
+      const userId = userCredential.user.uid;
+      await setDoc(doc(db, "User", userId), {
+        name: registerModel.name,
+        username: registerModel.username,
+        email: registerModel.email,
+        password: registerModel.password,
+      });
+
+      console.log("Pengguna terdaftar:", userCredential.user);
       this.router.push("/login");
     } catch (error: any) {
       console.error("Error pendaftaran:", error.message);

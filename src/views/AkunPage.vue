@@ -44,8 +44,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
-import { useRouter } from "vue-router"; // Import router untuk navigasi
+import { defineComponent, onMounted, onUnmounted } from "vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "AkunPage",
@@ -60,31 +60,29 @@ export default defineComponent({
     const router = useRouter();
 
     const goToProfile = () => {
-      router.push("/profile"); // Navigasi ke halaman Profile
+      router.push("/profile"); // Navigasi ke halaman ProfilePage.vue
     };
 
     return { goToProfile };
   },
   methods: {
-    editInfo() {
-      console.log("Edit Info Tapped");
-      this.goToProfile(); // Panggil metode navigasi
-    },
-    pelajariLebihLanjut() {
-      console.log("Navigasi ke info privasi");
-    },
     closePage() {
       console.log("Tombol silang ditekan");
     },
+    updateEmail() {
+      const storedEmail = localStorage.getItem("username");
+      this.user.email = storedEmail || "Email tidak ditemukan";
+    },
   },
   mounted() {
-    // Ambil email dari localStorage
-    const storedEmail = localStorage.getItem("username");
-    if (storedEmail) {
-      this.user.email = storedEmail;
-    } else {
-      this.user.email = "Email tidak ditemukan"; // Fallback jika tidak ada email
-    }
+    this.updateEmail(); // Inisialisasi email dari localStorage
+
+    // Tambahkan event listener untuk mendeteksi perubahan pada localStorage
+    window.addEventListener("storage", this.updateEmail);
+  },
+  unmounted() {
+    // Bersihkan event listener
+    window.removeEventListener("storage", this.updateEmail);
   },
 });
 </script>

@@ -18,20 +18,39 @@
       <ion-list class="info-list">
         <ion-item>
           <ion-label position="stacked">Email</ion-label>
-          <ion-input v-model="user.email" type="email" placeholder="Masukkan Email"></ion-input>
+          <ion-input
+            :value="user.email"
+            @ionInput="(e: CustomEvent) => user.email = e.detail.value"
+            type="email"
+            placeholder="Masukkan Email"
+          ></ion-input>
         </ion-item>
+
         <ion-item>
           <ion-label position="stacked">Nama</ion-label>
-          <ion-input v-model="user.nama" type="text" placeholder="Masukkan Nama"></ion-input>
+          <ion-input
+            :value="user.name"
+            @ionInput="(e: CustomEvent) => user.name = e.detail.value"
+            type="text"
+            placeholder="Masukkan Nama"
+          ></ion-input>
         </ion-item>
+
         <ion-item>
           <ion-label position="stacked">Username</ion-label>
-          <ion-input v-model="user.username" type="text" placeholder="Masukkan Nama"></ion-input>
+          <ion-input
+            :value="user.username"
+            @ionInput="(e: CustomEvent) => user.username = e.detail.value"
+            type="text"
+            placeholder="Masukkan Username"
+          ></ion-input>
         </ion-item>
+
         <ion-item>
           <ion-label position="stacked">Kata Sandi</ion-label>
           <ion-input
-            v-model="user.kataSandi"
+            :value="user.password"
+            @ionInput="(e: CustomEvent) => user.password = e.detail.value"
             type="password"
             placeholder="Masukkan Kata Sandi"
           ></ion-input>
@@ -50,7 +69,8 @@
 <script lang="ts">
 import { defineComponent, onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { fetchUserData } from "@/controllers/AkunController"; // Import fetchUserData
+import { fetchUserData, updateUserData } from "@/controllers/AkunController";
+import { alertController } from "@ionic/vue"; // Import alertController
 
 export default defineComponent({
   name: "ProfilePage",
@@ -60,29 +80,83 @@ export default defineComponent({
     // Data user yang akan diisi
     const user = reactive({
       email: "",
-      nama: "",
+      name: "",
       username: "",
-      kataSandi: "",
+      password: "",
     });
 
-    // Fetch data user saat halaman dimuat
+    // Fetch data user dari session login
     const fetchUser = async () => {
       const userId = localStorage.getItem("userId");
-      console.log("User ID dari localStorage:", userId); // Debugging
       if (userId) {
         const userData = await fetchUserData(userId);
-        console.log("Data pengguna dari Firebase:", userData); // Debugging
+        console.log("Data pengguna dari Firestore:", userData); // Debugging
+
         if (userData) {
-          user.email = userData.email || "";
-          user.nama = userData.nama || "";
-          user.username = userData.username || "";
-          user.kataSandi = userData.kataSandi || "";
+          // Pastikan data reaktif diperbarui
+          Object.assign(user, {
+            email: userData.email || "",
+            name: userData.name || "",
+            username: userData.username || "",
+            password: userData.password || "",
+          });
+          console.log("Setelah update user:", user); // Tambahkan log ini
         } else {
-          console.log("Data pengguna kosong atau tidak ditemukan.");
+          console.log("Data pengguna tidak ditemukan.");
         }
-      } else {
-        console.log("User ID tidak ditemukan di localStorage.");
       }
+    };
+
+    // Fungsi simpan perubahan
+    const save = async () => {
+      const userId = localStorage.getItem("userId");
+      if (userId) {
+        const trimmedUser = {
+          email: user.email.trim(),
+          name: user.name.trim(),
+          username: user.username.trim(),
+          password: user.password.trim(),
+        };
+
+        if (!trimmedUser.email || !trimmedUser.name || !trimmedUser.username || !trimmedUser.password) {
+          await showErrorPopup("Semua kolom harus diisi!");
+          return;
+        }
+
+        try {
+          await updateUserData(userId, trimmedUser);
+
+          // Update email di localStorage agar AkunPage mendeteksi perubahan
+          localStorage.setItem("username", trimmedUser.email);
+
+          await showSuccessPopup();
+          router.push("/akun");
+        } catch (error) {
+          console.error("Error updating profile:", error);
+          await showErrorPopup("Terjadi kesalahan saat memperbarui profil.");
+        }
+      }
+    };
+
+    // Fungsi popup error
+    const showErrorPopup = async (message: string) => {
+      const alert = await alertController.create({
+        header: "Error",
+        message: message,
+        buttons: ["OK"],
+      });
+      await alert.present();
+    };
+
+
+    // Tampilkan popup berhasil
+    const showSuccessPopup = async () => {
+      const alert = await alertController.create({
+        header: "Berhasil",
+        message: "Profil berhasil diperbarui!",
+        buttons: ["OK"],
+      });
+      await alert.present();
     };
 
     onMounted(() => {
@@ -91,10 +165,6 @@ export default defineComponent({
 
     const closePage = () => router.push("/akun");
     const cancel = () => router.push("/akun");
-    const save = () => {
-      console.log("Data disimpan:", user);
-      router.push("/akun");
-    };
 
     return { user, closePage, cancel, save };
   },
