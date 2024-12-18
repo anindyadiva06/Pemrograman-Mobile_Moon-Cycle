@@ -1,5 +1,5 @@
 // periodTracker.ts
-import { 
+import {
     getFirestore, 
     collection, 
     addDoc, 
