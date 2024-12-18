@@ -22,6 +22,11 @@ const routes: Array<RouteRecordRaw> = [
     meta: { menuDisabled: true },
   },
   {
+    path: '/homepage',
+    component: () => import('../views/HomePage.vue'),
+    meta: { menuDisabled: false }, 
+  },
+  {
     path: '/folder/:id',
     component: () => import('../views/FolderPage.vue'),
   },
