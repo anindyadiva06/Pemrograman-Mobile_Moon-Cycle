@@ -1,6 +1,6 @@
 export default class PeriodModel {
-    date: string; // Format tanggal yyyy-MM-dd
-    status: string; // 'checked' atau 'unchecked'
+    date: string; 
+    status: string; 
   
     constructor(date: string, status: string = "checked") {
       this.date = date;

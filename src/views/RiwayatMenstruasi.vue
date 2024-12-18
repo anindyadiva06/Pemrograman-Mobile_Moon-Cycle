@@ -260,7 +260,7 @@ const getDayClasses = (day: number) => {
 };
 
 const formatDisplayDate = (date: Date): string => {
-  return ${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()};
+  return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
 };
 
 const loadPeriodData = async () => {
@@ -455,5 +455,3 @@ onMounted(async () => {
   }
 }
 </style>
-
-riwayat menstruasi.vue
