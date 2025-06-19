@@ -1,5 +1,5 @@
 <h1>
-  <img src="src/assets/images/logo%20with%20name.png" alt="Moon Cycle Logo" width="120" style="vertical-align: middle;"/>
+  <img src="src/assets/images/logo%20with%20name.png" alt="Moon Cycle Logo" width="200" style="vertical-align: middle;"/>
 </h1>
 
 
