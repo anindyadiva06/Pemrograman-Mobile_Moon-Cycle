@@ -1,4 +1,7 @@
-# ![Moon Cycle Logo](src/assets/images/logo%20with%20name.png) 
+<h1>
+  <img src="src/assets/images/logo%20with%20name.png" alt="Moon Cycle Logo" width="120" style="vertical-align: middle;"/>
+</h1>
+
 
 **Moon Cycle** adalah aplikasi mobile yang dirancang untuk membantu wanita memahami dan melacak siklus menstruasi mereka dengan lebih **akurat dan informatif**. Aplikasi ini tidak hanya menampilkan **fase menstruasi** secara jelas, tetapi juga memberikan **rekomendasi nutrisi** yang disesuaikan dengan kebutuhan tubuh pada setiap fase, seperti saat fase menstruasi di mana tubuh memerlukan asupan zat besi lebih banyak.
 
@@ -21,6 +24,7 @@ Aplikasi menyajikan saran makanan dan nutrisi untuk setiap fase:
 ## 🛠️ Teknologi yang Digunakan
 - Vue.Js
 - Ionic
+- Firebase
 
 © 2024 – *Proyek ini merupakan tugas akhir mata kuliah Pemrograman Mobile* 
 
